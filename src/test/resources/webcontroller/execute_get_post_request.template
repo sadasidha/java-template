@@ -1,0 +1,8 @@
+protected boolean executeHandleGetRequest(HttpServletRequest request, HttpServletResponse response, EntityParser entity, EntityParser query) {
+#start IF
+    if (##FUNCTION_NAME##(request, response, entity, query) == true) {
+        return true;
+    }
+#end IF
+    return false;
+}

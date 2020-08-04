@@ -1,0 +1,8 @@
+##VAR_NAME_FNC## = ##LANG_NUMBER_TYPE##.valueOf(##VAR_NAME##);
+
+##LANG_NUMBER_TYPE## ##VAR_NAME_FNC##;
+if (!com.google.common.base.Strings.isNullOrEmpty(##VAR_NAME##) && !##VAR_NAME##.matches("^[0-9]+$") && !##VAR_NAME##.matches("^[0-9]*\\.[0-9]+$"))
+    return false;
+if(com.google.common.base.Strings.isNullOrEmpty(##VAR_NAME##)) {
+    ##VAR_NAME_FNC## = ##LANG_NUMBER_TYPE##.valueOf("##DEFAULT_VALUE##");
+}

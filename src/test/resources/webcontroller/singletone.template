@@ -1,0 +1,1 @@
+##VARIABLE_TYPE## ##VARIABLE_NAME## = SingletoneClass.getSingletone("##VARIABLE_TYPE##");

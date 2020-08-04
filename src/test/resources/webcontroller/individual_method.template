@@ -1,0 +1,27 @@
+/**
+ * This is the function will process ##FUNCTION_NAME##
+*/
+private boolean ##FUNCTION_NAME##(HttpServletRequest request, HttpServletResponse response, EntityParser entity, EntityParser query) {
+    if (entity.getLength() != ##ENTITY_COUNT##)
+        return false;
+    if (query.getLength() != ##QUERY_VALUE_COUNT##)
+        return false;
+
+#insert URI_VARIABLE_MAP
+
+#insert VALIDATE_VARIABLE
+
+    try {
+        ##RETURN_TYPE## ret = ##CLASS_VARIABLE##.##CLASS_NAME##(##PARAMETER_LIST##);
+        if (response.getStatus() == 0) {
+            response.setStatus(HttpStatus.SC_OK);
+        }
+        if (Strings.isNullOrEmpty(response.getHeader(ResponseHeaderName.Content.TYPE))) {
+            response.setHeader(ResponseHeaderName.Content.TYPE, ContentType.TextHtmlXml.TEXT_HTML_UTF8);
+        }
+#insert ADDITIONAL_ACTIONS
+    } catch (Exception e) {
+        ExceptionHandler(e, response);
+    }
+    return true;
+}

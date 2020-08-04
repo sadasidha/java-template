@@ -1,0 +1,14 @@
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) {
+        EntityParser enity = new EntityParser();
+        try {
+            enity.createEntityMap(request.getInputStream());
+        } catch (Exception e) {
+        }
+        EntityParser query = new EntityParser();
+        query.createEntityMap(request.getQueryString());
+
+        if (!executeHandlePostRequest(request, response, enity, query)) {
+            response.setStatus(HttpStatus.SC_NOT_FOUND);
+        }
+    }

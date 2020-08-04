@@ -1,0 +1,1 @@
+##VARIABLE## ##VAR_NAME## = ##MAP_NAME##.get("##NAME##");

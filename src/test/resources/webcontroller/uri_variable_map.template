@@ -1,0 +1,4 @@
+Map<String, String> uriVarMap = VariableUrlProcess.extractData(##PATTERN_URL##, request.getRequestURI());
+if (uriVarMap.size() != ##URI_MAP_SIZE##) {
+    return false;
+}

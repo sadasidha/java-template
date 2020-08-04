@@ -1,0 +1,3 @@
+if (##VAR_NAME## == null || (!##VAR_NAME##.matches("^[0-9]+$") && !##VAR_NAME##.matches("^[0-9]*\\.[0-9]+$") ))
+    return false;
+##VAR_NAME_FNC## = ##LANG_NUMBER_TYPE##.valueOf(##VAR_NAME##);

@@ -1,0 +1,17 @@
+@Override
+public void doGet(HttpServletRequest request, HttpServletResponse response) {
+    EntityParser enity = new EntityParser();
+    try {
+        enity.createEntityMap(request.getInputStream());
+    } catch (Exception e) {
+    }
+    EntityParser query = new EntityParser();
+    query.createEntityMap(request.getQueryString());
+
+    // TODO play with this later
+    Map<String, String[]> parameterMap = request.getParameterMap();
+    System.out.println(parameterMap.size());
+    if (!executeHandleGetRequest(request, response, enity, query)) {
+        response.setStatus(HttpStatus.SC_NOT_FOUND);
+    }
+}

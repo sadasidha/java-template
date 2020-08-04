@@ -1,0 +1,23 @@
+package ##PACKAGE_NAME##;
+
+#import webcontroller/imports  imports
+
+public class ##CLASS_NAME## extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    ##WEB_HANDLE_CLASS## controller;
+    #import webcontroller/constructor   constructor
+
+    #may_import webcontroller/get   get
+
+    #may_import webcontroller/execute_get_post_request get_exe
+
+    #may_import webcontroller/post  get
+
+    #may_import webcontroller/execute_get_post_request post_exe
+ 
+    #repeat_import webcontroller/indivdual_method METHODS
+
+
+    #import webcontroller/exception_handle
+}
