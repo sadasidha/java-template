@@ -32,25 +32,25 @@ public class TemplateProcessor {
     Map<String, Integer> varList = new HashMap<String, Integer>();
     Map<String, TemplateBlock> blockList = new HashMap<String, TemplateBlock>();
 
-    TemplateProcessor(String dataSource) throws IOException {
+    public TemplateProcessor(String dataSource) {
         InputStream is;
 
         sourceFile = dataSource;
         is = this.getClass().getClassLoader().getResourceAsStream(dataSource + TEMPLATE);
         if (is == null) {
-            throw new IOException("Resource " + sourceFile + TEMPLATE + " not found");
+            throw new BadIOException("Resource " + sourceFile + TEMPLATE + " not found");
         }
         prepare(is);
     }
 
-    TemplateProcessor(String dataSource, String from, boolean loadFromFile) throws IOException {
+    public TemplateProcessor(String dataSource, String from, boolean loadFromFile) {
 
         InputStream is;
         if (loadFromFile) {
             sourceFile = from + " > " + dataSource;
             is = this.getClass().getClassLoader().getResourceAsStream(dataSource + TEMPLATE);
             if (is == null) {
-                throw new IOException("Resource " + sourceFile + TEMPLATE + " not found.");
+                throw new BadIOException("Resource " + sourceFile + TEMPLATE + " not found.");
             }
         } else {
             sourceFile = from;
@@ -59,7 +59,7 @@ public class TemplateProcessor {
         prepare(is);
     }
 
-    TemplateProcessor(InputStream is) throws IOException {
+    TemplateProcessor(InputStream is) {
         prepare(is);
     }
 
@@ -89,7 +89,7 @@ public class TemplateProcessor {
         varList.put(s, (varList.get(s) - count));
     }
 
-    private void addToBlockMap() throws DuplicateNameException {
+    private void addToBlockMap() {
         TemplateBlock last = templateLines.get(templateLines.size() - 1);
         if (Strings.isNullOrEmpty(last.name))
             return;
@@ -98,50 +98,39 @@ public class TemplateProcessor {
         blockList.put(last.name, last);
     }
 
-    private void prepare(InputStream is) throws IOException, DuplicateNameException, BadFormatException {
+    private void prepare(InputStream is) {
         templateLines = new ArrayList<TemplateBlock>();
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         StringBuilder contLine = null;
         String line;
         int lineNumber = 0;
         String startName = "";
-        while ((line = br.readLine()) != null) {
-            lineNumber++;
-            String simpleLine = line.trim().replaceAll("\\s+", " ");
-            if (contLine == null && line.trim().startsWith(START)) {
-                startName = simpleLine.split(" ")[1];
-                contLine = new StringBuilder();
-                contLine.append(line).append("\n");
-            } else if (contLine != null && simpleLine.startsWith(END + startName)) {
-                contLine.append(line).append("\n");
-                templateLines.add(new TemplateBlock(contLine.toString(), lineNumber));
-                contLine = null;
-                startName = null;
-            } else if (contLine != null) {
-                contLine.append(line).append("\n");
-            } else {
-                templateLines.add(new TemplateBlock(line, lineNumber));
+        try {
+            while ((line = br.readLine()) != null) {
+                lineNumber++;
+                String simpleLine = line.trim().replaceAll("\\s+", " ");
+                if (contLine == null && line.trim().startsWith(START)) {
+                    startName = simpleLine.split(" ")[1];
+                    contLine = new StringBuilder();
+                    contLine.append(line).append("\n");
+                } else if (contLine != null && simpleLine.startsWith(END + startName)) {
+                    contLine.append(line).append("\n");
+                    templateLines.add(new TemplateBlock(contLine.toString(), lineNumber));
+                    contLine = null;
+                    startName = null;
+                } else if (contLine != null) {
+                    contLine.append(line).append("\n");
+                } else {
+                    templateLines.add(new TemplateBlock(line, lineNumber));
+                }
+                if (contLine == null) {
+                    addCount();
+                    addToBlockMap();
+                }
             }
-            if (contLine == null) {
-                addCount();
-                addToBlockMap();
-                populateIfNecessary();
-            }
+        } catch (IOException e) {
+            throw new BadIOException(e.getMessage());
         }
-    }
-
-    private void populateIfNecessary() throws IOException, DuplicateNameException, BadFormatException {
-        TemplateBlock last = templateLines.get(templateLines.size() - 1);
-        if (last == null)
-            return;
-
-        if (last.lineType == LineType.SIMPLE_LINE || last.lineType == LineType.REPEATE
-                || last.lineType == LineType.INSERT) {
-            return;
-        }
-        // TODO fix tabe fuck
-        // last.importTempate.base_tab = last.tabCount;
-
     }
 
     private Integer setValueToAll(String varName, String value) {
@@ -172,7 +161,7 @@ public class TemplateProcessor {
         return sb.toString();
     }
 
-    public TemplateProcessor addRepeatBlock(String name, String strBlockName) throws IOException {
+    public TemplateProcessor addRepeatBlock(String name, String strBlockName) {
         TemplateBlock block = blockList.get(name);
         if (block == null) {
             throw new BlockMissingException(
@@ -199,7 +188,7 @@ public class TemplateProcessor {
         return tp;
     }
 
-    public TemplateProcessor addImportBlock(String name, String strBlockName) throws IOException {
+    public TemplateProcessor addImportBlock(String name, String strBlockName) {
         TemplateBlock block = blockList.get(name);
         if (block == null) {
             throw new BlockMissingException(
