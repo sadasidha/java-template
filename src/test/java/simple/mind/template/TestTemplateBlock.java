@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Test;
 public class TestTemplateBlock {
 
     @Test
-    public void All_Comb_Test() {
+    public void All_Comb_Test() throws BadFormatException {
         TemplateBlock tb = new TemplateBlock("I am ##NAME##", 0);
         List<Token> t = tb.getTokenList();
         assertEquals(t.size(), 2);
@@ -55,5 +56,19 @@ public class TestTemplateBlock {
         assertEquals(t.get(5).token, "##AGE##");
         assertTrue(t.get(6).processed);
         assertEquals(t.get(6).token, " year old.");
+    }
+
+    @Test
+    public void testInputBlock() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("#start if\n");
+        sb.append("#import webcontroller/grab_and_convert/mandatory/biginteger bigint\n");
+        sb.append("#end if");
+        TemplateProcessor tp = new TemplateProcessor(sb.toString(), "", false);
+        TemplateProcessor if1 = tp.addRepeatBlock("if", "if1");
+        TemplateProcessor bigint = if1.addImportBlock("bigint", "bigint");
+        bigint.setValue("VAR_NAME", "userName");
+        assertEquals(tp.toString(), "if (userName == null || !userName.matches(\"^[0-9]+$\")\n" + "    return false;\n"
+                + "userName_fnc = new java.math.BigInteger(userName);\n");
     }
 }

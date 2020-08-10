@@ -1,6 +1,0 @@
-public ##CLASS_NAME##() {
-#start IMPORT_SINGLETONE
-    #import webcontrolle/singletone
-#end IMPORT_SINGLETONE
-    baseController = new simple.mind.web.controllers.SearchController(##SINGLETONE_LIST##);
-}

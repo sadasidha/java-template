@@ -1,23 +1,26 @@
 package ##PACKAGE_NAME##;
 
-#import webcontroller/imports  imports
+#import_once webcontroller/imports  imports
 
 public class ##CLASS_NAME## extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     ##WEB_HANDLE_CLASS## controller;
-    #import webcontroller/constructor   constructor
 
-    #may_import webcontroller/get   get
+    public ##CLASS_NAME##() {
+        #import webcontroller/singletone singletone
+        controller = new ##WEB_HANDLE_CLASS##(##SINGLETONE_LIST##);
+    }
 
-    #may_import webcontroller/execute_get_post_request get_exe
+    #import_once webcontroller/get  get
 
-    #may_import webcontroller/post  get
+    #import webcontroller/execute_get_post_request get_exe
 
-    #may_import webcontroller/execute_get_post_request post_exe
+    #import webcontroller/post post
+
+    #import webcontroller/execute_get_post_request post_exe
  
-    #repeat_import webcontroller/indivdual_method METHODS
+    #import webcontroller/individual_method methods
 
-
-    #import webcontroller/exception_handle
+    #import webcontroller/exception_handler exception
 }

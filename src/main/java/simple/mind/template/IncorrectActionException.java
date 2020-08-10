@@ -1,12 +1,13 @@
 package simple.mind.template;
 
-class NotImpementedYetException extends RuntimeException {
+class IncorrectActionException extends RuntimeException {
+
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    NotImpementedYetException(String ex) {
+    public IncorrectActionException(String ex) {
         super(ex);
     }
 }
