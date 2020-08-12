@@ -188,6 +188,10 @@ public class TemplateProcessor {
         return tp;
     }
 
+    public TemplateProcessor addImportBlock(String name) {
+        return addImportBlock(name, name);
+    }
+
     public TemplateProcessor addImportBlock(String name, String strBlockName) {
         TemplateBlock block = blockList.get(name);
         if (block == null) {
