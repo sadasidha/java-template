@@ -30,7 +30,6 @@ public class TemplateProcessor {
     int base_tab = 0;
     String sourceFile;
     List<TemplateBlock> templateLines;
-    Map<String, Integer> varList = new HashMap<String, Integer>();
     Map<String, TemplateBlock> blockList = new HashMap<String, TemplateBlock>();
 
     public TemplateProcessor(Class<?> cls, String dataSource) {
@@ -38,7 +37,7 @@ public class TemplateProcessor {
         InputStream is;
 
         sourceFile = dataSource;
-        is = cls.getResourceAsStream(dataSource + TEMPLATE);
+        is = cls.getClassLoader().getResourceAsStream(dataSource + TEMPLATE);
         if (is == null) {
             throw new BadIOException("Resource " + sourceFile + TEMPLATE + " not found");
         }
@@ -50,7 +49,7 @@ public class TemplateProcessor {
         InputStream is;
         if (loadFromFile) {
             sourceFile = from + " > " + dataSource;
-            is = cls.getResourceAsStream(dataSource + TEMPLATE);
+            is = cls.getClassLoader().getResourceAsStream(dataSource + TEMPLATE);
             if (is == null) {
                 throw new BadIOException("Resource " + sourceFile + TEMPLATE + " not found.");
             }
@@ -64,32 +63,6 @@ public class TemplateProcessor {
     public TemplateProcessor(Class<?> cls, InputStream is) {
         classs = cls;
         prepare(is);
-    }
-
-    private void addCount() {
-        TemplateBlock last = templateLines.get(templateLines.size() - 1);
-        if (last == null)
-            return;
-        if (last.getTokenList() == null)
-            return;
-        for (Token t : last.getTokenList()) {
-            if (false == t.processed) {
-                String p = t.token.replace("#", "");
-                Integer i;
-                if (varList.containsKey(p)) {
-                    i = varList.get(p);
-                } else {
-                    i = 1;
-                }
-                varList.put(p, i);
-            }
-        }
-    }
-
-    private void subtract(String s, Integer count) {
-        if (!varList.containsKey(s))
-            return;
-        varList.put(s, (varList.get(s) - count));
     }
 
     private void addToBlockMap() {
@@ -127,7 +100,6 @@ public class TemplateProcessor {
                     templateLines.add(new TemplateBlock(line, lineNumber));
                 }
                 if (contLine == null) {
-                    addCount();
                     addToBlockMap();
                 }
             }
@@ -136,23 +108,15 @@ public class TemplateProcessor {
         }
     }
 
-    private Integer setValueToAll(String varName, String value) {
+
+    public TemplateProcessor setValue(String varName, String value) {
         Integer count = 0;
         for (TemplateBlock t : templateLines) {
             if (t.lineType == LineType.SIMPLE_LINE) {
                 count += t.setVariables(varName, value);
             }
         }
-        return count;
-    }
-
-    public boolean setValue(String varName, String value) {
-        if (!varList.containsKey(varName) || varList.get(varName) == 0) {
-            return false;
-        }
-        Integer i = setValueToAll(varName, value);
-        subtract(varName, i);
-        return i > 0;
+        return this;
     }
 
     public String toString() {
