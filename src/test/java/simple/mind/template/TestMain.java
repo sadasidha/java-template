@@ -10,7 +10,7 @@ public class TestMain {
     @Test
     public void main() throws IOException {
         try {
-            TemplateProcessor template = new TemplateProcessor("webcontroller");
+            TemplateProcessor template = new TemplateProcessor(this.getClass(), "webcontroller");
 
             template.setValue("PACKAGE_NAME", "my.package");
             TemplateProcessor imports = template.addImportBlock("imports", "imports");

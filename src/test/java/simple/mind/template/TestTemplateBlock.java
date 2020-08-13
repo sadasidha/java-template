@@ -64,7 +64,7 @@ public class TestTemplateBlock {
         sb.append("#start if\n");
         sb.append("#import webcontroller/grab_and_convert/mandatory/biginteger bigint\n");
         sb.append("#end if");
-        TemplateProcessor tp = new TemplateProcessor(sb.toString(), "", false);
+        TemplateProcessor tp = new TemplateProcessor(this.getClass(), sb.toString(), "", false);
         TemplateProcessor if1 = tp.addRepeatBlock("if", "if1");
         TemplateProcessor bigint = if1.addImportBlock("bigint", "bigint");
         bigint.setValue("VAR_NAME", "userName");

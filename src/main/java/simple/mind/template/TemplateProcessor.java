@@ -26,29 +26,31 @@ public class TemplateProcessor {
     static final String LOOK = "##";
     static final int LOOK_LENGTH = 2;
     public static final String IMPORT_ONCE = "#import_once ";
+    Class<?> classs;
     int base_tab = 0;
     String sourceFile;
     List<TemplateBlock> templateLines;
     Map<String, Integer> varList = new HashMap<String, Integer>();
     Map<String, TemplateBlock> blockList = new HashMap<String, TemplateBlock>();
 
-    public TemplateProcessor(String dataSource) {
+    public TemplateProcessor(Class<?> cls, String dataSource) {
+        classs = cls;
         InputStream is;
 
         sourceFile = dataSource;
-        is = this.getClass().getClassLoader().getResourceAsStream(dataSource + TEMPLATE);
+        is = cls.getResourceAsStream(dataSource + TEMPLATE);
         if (is == null) {
             throw new BadIOException("Resource " + sourceFile + TEMPLATE + " not found");
         }
         prepare(is);
     }
 
-    public TemplateProcessor(String dataSource, String from, boolean loadFromFile) {
-
+    public TemplateProcessor(Class<?> cls, String dataSource, String from, boolean loadFromFile) {
+        classs = cls;
         InputStream is;
         if (loadFromFile) {
             sourceFile = from + " > " + dataSource;
-            is = this.getClass().getClassLoader().getResourceAsStream(dataSource + TEMPLATE);
+            is = cls.getResourceAsStream(dataSource + TEMPLATE);
             if (is == null) {
                 throw new BadIOException("Resource " + sourceFile + TEMPLATE + " not found.");
             }
@@ -59,7 +61,8 @@ public class TemplateProcessor {
         prepare(is);
     }
 
-    TemplateProcessor(InputStream is) {
+    public TemplateProcessor(Class<?> cls, InputStream is) {
+        classs = cls;
         prepare(is);
     }
 
@@ -182,7 +185,7 @@ public class TemplateProcessor {
             return tp;
         }
 
-        tp = new TemplateProcessor(block.loadableTemplateName, this.sourceFile, false);
+        tp = new TemplateProcessor(classs, block.loadableTemplateName, this.sourceFile, false);
         tp.base_tab = block.tabCount;
         block.templateProcessorMap.put(strBlockName, tp);
         return tp;
@@ -210,7 +213,7 @@ public class TemplateProcessor {
         if (tp != null) {
             return tp;
         }
-        tp = new TemplateProcessor(block.loadableTemplateName, this.sourceFile, true);
+        tp = new TemplateProcessor(classs, block.loadableTemplateName, this.sourceFile, true);
         tp.base_tab = block.tabCount;
         block.templateProcessorMap.put(strBlockName, tp);
         return tp;
