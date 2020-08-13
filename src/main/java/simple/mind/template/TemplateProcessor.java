@@ -150,7 +150,7 @@ public class TemplateProcessor {
         }
 
         tp = new TemplateProcessor(classs, block.loadableTemplateName, this.sourceFile, false);
-        tp.base_tab = block.tabCount;
+        tp.base_tab = block.tabCount + base_tab;
         block.templateProcessorMap.put(strBlockName, tp);
         return tp;
     }
@@ -178,7 +178,7 @@ public class TemplateProcessor {
             return tp;
         }
         tp = new TemplateProcessor(classs, block.loadableTemplateName, this.sourceFile, true);
-        tp.base_tab = block.tabCount;
+        tp.base_tab = block.tabCount + base_tab;
         block.templateProcessorMap.put(strBlockName, tp);
         return tp;
     }

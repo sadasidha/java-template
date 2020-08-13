@@ -22,6 +22,7 @@ class TemplateBlock {
     public TemplateBlock(String tmplateLine, int lineNumber) throws BadFormatException {
         this.lineNumber = lineNumber;
         templateString = tmplateLine;
+
         setTabCount();
         setLineType();
     }
@@ -157,7 +158,13 @@ class TemplateBlock {
     public String toString(int base_tab) {
         String baseTabeStr = getTabs(base_tab);
         StringBuilder sbv = new StringBuilder();
-        if (lineType == LineType.IMPORT || lineType == LineType.IMPORT_ONCE || lineType == LineType.REPEATE) {
+        if (lineType == LineType.IMPORT || lineType == LineType.IMPORT_ONCE) {
+            for (TemplateProcessor temp : templateProcessorMap.values()) {
+                sbv.append(temp.toString());
+            }
+            return sbv.toString();
+        }
+        if(lineType == LineType.REPEATE) {
             for (TemplateProcessor temp : templateProcessorMap.values()) {
                 sbv.append(temp.toString());
             }
