@@ -71,4 +71,19 @@ public class TestTemplateBlock {
         assertEquals(tp.toString(), "if (userName == null || !userName.matches(\"^[0-9]+$\")\n" + "    return false;\n"
                 + "userName_fnc = new java.math.BigInteger(userName);\n");
     }
+    
+    @Test
+    public void testBlock() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("public static void main(String []args){").append("\n");
+        sb.append("    #start block").append("\n");
+        sb.append("    #insert mulLine").append("\n");
+        sb.append("    #end block").append("\n");
+        sb.append("}").append("\n");
+        TemplateProcessor tp = new TemplateProcessor(this.getClass(), sb.toString(), "", false);
+        TemplateProcessor block = tp.addRepeatBlock("block", "crank");
+        block.addToInsertSplitNewLIne("mulLine", "System.out.println(\"First Line\");\nSystem.out.println(\"Second Line\");\n");
+        
+        System.out.println(tp.toString());
+    }
 }

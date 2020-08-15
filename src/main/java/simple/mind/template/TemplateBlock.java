@@ -16,7 +16,7 @@ class TemplateBlock {
     String name;
     String loadableTemplateName;
     Map<String, TemplateProcessor> templateProcessorMap;
-    StringBuilder simpleInsret;
+    List<String> simpleInsert;
     List<Token> tokenList;
 
     public TemplateBlock(String tmplateLine, int lineNumber) throws BadFormatException {
@@ -82,7 +82,7 @@ class TemplateBlock {
             setName(true);
         } else if (s.startsWith(TemplateProcessor.INSERT)) {
             lineType = LineType.INSERT;
-            simpleInsret = new StringBuilder();
+            simpleInsert = new ArrayList<String>();
             setName(false);
         } else if (s.startsWith(TemplateProcessor.START)
                 && splits[splits.length - 1].trim().startsWith(TemplateProcessor.END)) {
@@ -92,7 +92,7 @@ class TemplateBlock {
             StringJoiner sb = new StringJoiner("\n");
 
             for (int i = 1; i < splits.length - 1; i++) {
-                sb.add(splits[i]);
+                sb.add(splits[i].trim());
             }
             loadableTemplateName = sb.toString();
             templateProcessorMap = getNewMap();
@@ -161,20 +161,28 @@ class TemplateBlock {
         String baseTabeStr = getTabs(base_tab);
         StringBuilder sbv = new StringBuilder();
         if (lineType == LineType.IMPORT || lineType == LineType.IMPORT_ONCE) {
+            if(templateProcessorMap.size()!=0)
+                sbv.append("// Importing ").append(this.loadableTemplateName).append("\n");
             for (TemplateProcessor temp : templateProcessorMap.values()) {
                 sbv.append(temp.toString());
             }
             return sbv.toString();
         }
         if (lineType == LineType.REPEATE) {
+            if(templateProcessorMap.size()!=0)
+                sbv.append("// Repeat block ").append(this.name).append("\n");
             for (TemplateProcessor temp : templateProcessorMap.values()) {
                 sbv.append(temp.toString());
             }
             return sbv.toString();
         }
         if (lineType == LineType.INSERT) {
-            sbv.append(baseTabeStr);
-            return sbv.append(simpleInsret).toString();
+            if(simpleInsert.size()!=0)
+                sbv.append("// Inserting ").append(this.name).append("\n");
+            for (String s : simpleInsert) {
+                sbv.append(baseTabeStr).append(s).append("\n");
+            }
+            return sbv.toString();
         }
         if (lineType == LineType.SIMPLE_LINE) {
             sbv.append(baseTabeStr);
@@ -183,6 +191,10 @@ class TemplateBlock {
             }
             return sbv.append("\n").toString();
         }
+        if (lineType == LineType.COMMENT) {
+            return "";
+        }
         throw new NotImpementedYetException(lineType + " Not implemented yet");
     }
 }
+

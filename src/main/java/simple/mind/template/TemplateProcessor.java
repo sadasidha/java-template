@@ -25,7 +25,7 @@ public class TemplateProcessor {
     static final String TAB = "    ";
     static final String LOOK = "##";
     static final int LOOK_LENGTH = 2;
-    static final String COMMENT = "### ";
+    static final String COMMENT = "#comment ";
     public static final String IMPORT_ONCE = "#import_once ";
     Class<?> classs;
     int base_tab = 0;
@@ -109,7 +109,6 @@ public class TemplateProcessor {
         }
     }
 
-
     public TemplateProcessor setValue(String varName, String value) {
         Integer count = 0;
         for (TemplateBlock t : templateLines) {
@@ -190,7 +189,17 @@ public class TemplateProcessor {
             throw new IncorrectActionException("Insert cannot be done on type " + block.lineType + " for name: " + name
                     + ", fileName: " + block.loadableTemplateName + "[" + block.lineNumber + "]");
         }
-        block.simpleInsret.append(text);
+        block.simpleInsert.add(text);
     }
 
+    public void addToInsertSplitNewLIne(String name, String text) {
+        TemplateBlock block = blockList.get(name);
+        if (block.lineType != LineType.INSERT) {
+            throw new IncorrectActionException("Insert cannot be done on type " + block.lineType + " for name: " + name
+                    + ", fileName: " + block.loadableTemplateName + "[" + block.lineNumber + "]");
+        }
+        for (String s : text.split("\n")) {
+            block.simpleInsert.add(s);
+        }
+    }
 }
