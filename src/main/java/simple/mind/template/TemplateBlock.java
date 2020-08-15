@@ -158,11 +158,11 @@ class TemplateBlock {
     }
 
     public String toString(int base_tab) {
-        String baseTabeStr = getTabs(base_tab);
+        String baseTabStr = getTabs(base_tab);
         StringBuilder sbv = new StringBuilder();
         if (lineType == LineType.IMPORT || lineType == LineType.IMPORT_ONCE) {
             if(templateProcessorMap.size()!=0)
-                sbv.append("// Importing ").append(this.loadableTemplateName).append("\n");
+                sbv.append(baseTabStr).append("// Importing ").append(this.loadableTemplateName).append("\n");
             for (TemplateProcessor temp : templateProcessorMap.values()) {
                 sbv.append(temp.toString());
             }
@@ -170,22 +170,24 @@ class TemplateBlock {
         }
         if (lineType == LineType.REPEATE) {
             if(templateProcessorMap.size()!=0)
-                sbv.append("// Repeat block ").append(this.name).append("\n");
+                sbv.append(baseTabStr).append("// Repeat block: ").append(this.name).append(" starts").append("\n");
             for (TemplateProcessor temp : templateProcessorMap.values()) {
                 sbv.append(temp.toString());
             }
+            if(templateProcessorMap.size()!=0)
+                sbv.append(baseTabStr).append("// Repeat block: ").append(this.name).append(" ends").append("\n");
             return sbv.toString();
         }
         if (lineType == LineType.INSERT) {
             if(simpleInsert.size()!=0)
-                sbv.append("// Inserting ").append(this.name).append("\n");
+                sbv.append(baseTabStr).append("// Inserting :").append(this.name).append("\n");
             for (String s : simpleInsert) {
-                sbv.append(baseTabeStr).append(s).append("\n");
+                sbv.append(baseTabStr).append(s).append("\n");
             }
             return sbv.toString();
         }
         if (lineType == LineType.SIMPLE_LINE) {
-            sbv.append(baseTabeStr);
+            sbv.append(baseTabStr);
             for (Token t : tokenList) {
                 sbv.append(t.token);
             }

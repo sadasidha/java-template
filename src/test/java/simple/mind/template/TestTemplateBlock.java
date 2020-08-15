@@ -68,10 +68,14 @@ public class TestTemplateBlock {
         TemplateProcessor if1 = tp.addRepeatBlock("if", "if1");
         TemplateProcessor bigint = if1.addImportBlock("bigint", "bigint");
         bigint.setValue("VAR_NAME", "userName");
-        assertEquals(tp.toString(), "if (userName == null || !userName.matches(\"^[0-9]+$\")\n" + "    return false;\n"
-                + "userName_fnc = new java.math.BigInteger(userName);\n");
+        assertEquals(tp.toString(), "// Repeat block: if starts\n" + 
+                "// Importing webcontroller/grab_and_convert/mandatory/biginteger\n" + 
+                "if (userName == null || !userName.matches(\"^[0-9]+$\")\n" + 
+                "    return false;\n" + 
+                "userName_fnc = new java.math.BigInteger(userName);\n" + 
+                "// Repeat block: if ends\n");
     }
-    
+
     @Test
     public void testBlock() throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -82,8 +86,9 @@ public class TestTemplateBlock {
         sb.append("}").append("\n");
         TemplateProcessor tp = new TemplateProcessor(this.getClass(), sb.toString(), "", false);
         TemplateProcessor block = tp.addRepeatBlock("block", "crank");
-        block.addToInsertSplitNewLIne("mulLine", "System.out.println(\"First Line\");\nSystem.out.println(\"Second Line\");\n");
-        
+        block.addToInsertSplitNewLIne("mulLine",
+                "System.out.println(\"First Line\");\nSystem.out.println(\"Second Line\");\n");
+
         System.out.println(tp.toString());
     }
 }
