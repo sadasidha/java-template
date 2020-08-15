@@ -17,7 +17,7 @@ class TemplateBlock {
     String loadableTemplateName;
     Map<String, TemplateProcessor> templateProcessorMap;
     StringBuilder simpleInsret;
-    List<Token> tokenList = null;
+    List<Token> tokenList;
 
     public TemplateBlock(String tmplateLine, int lineNumber) throws BadFormatException {
         this.lineNumber = lineNumber;
@@ -70,7 +70,9 @@ class TemplateBlock {
         name = "";
         String s = templateString.trim();
         String splits[] = s.split("\n");
-        if (s.startsWith(TemplateProcessor.IMPORT)) {
+        if (s.startsWith(TemplateProcessor.COMMENT)) {
+            lineType = LineType.COMMENT;
+        } else if (s.startsWith(TemplateProcessor.IMPORT)) {
             lineType = LineType.IMPORT;
             templateProcessorMap = getNewMap();
             setName(true);
@@ -164,7 +166,7 @@ class TemplateBlock {
             }
             return sbv.toString();
         }
-        if(lineType == LineType.REPEATE) {
+        if (lineType == LineType.REPEATE) {
             for (TemplateProcessor temp : templateProcessorMap.values()) {
                 sbv.append(temp.toString());
             }

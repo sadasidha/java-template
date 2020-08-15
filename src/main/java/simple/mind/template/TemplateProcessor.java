@@ -25,6 +25,7 @@ public class TemplateProcessor {
     static final String TAB = "    ";
     static final String LOOK = "##";
     static final int LOOK_LENGTH = 2;
+    static final String COMMENT = "### ";
     public static final String IMPORT_ONCE = "#import_once ";
     Class<?> classs;
     int base_tab = 0;

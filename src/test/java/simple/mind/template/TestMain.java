@@ -13,8 +13,8 @@ public class TestMain {
 
             template.setValue("PACKAGE_NAME", "my.package");
             TemplateProcessor imports = template.addImportBlock("imports", "imports");
-            imports.addToInsert("ADDITIONAL_IMPORT", "import fuck;\n");
-            imports.addToInsert("ADDITIONAL_IMPORT", "import double.fuck;\nimport tripple.fuck");
+            imports.addToInsert("ADDITIONAL_IMPORT", "import java.util.Map;\n");
+            imports.addToInsert("ADDITIONAL_IMPORT", "import java.util.HashMap;\nimport java.util.ArrayList;");
             template.setValue("CLASS_NAME", "ExtendedWebController");
             template.setValue("WEB_HANDLE_CLASS", "simple.mind.school.Search");
             TemplateProcessor single_one = template.addImportBlock("singletone", "singltone1");
