@@ -29,18 +29,18 @@ public class TemplateProcessor {
      * If resource file name including path is resources/template/web.template<br>
      * <b>resourceFileName</b> must have to be <b>template/web</b>
      * 
-     * @param cls             : give us the base for resource files
+     * @param cls              : give us the base for resource files
      * @param resourceFileName : loadable resource file file
      */
     public TemplateProcessor(Class<?> cls, String resourceFileName) {
         classs = cls;
-        InputStream is;
+        InputStream inputStream;
         sourceFile = resourceFileName;
-        is = cls.getClassLoader().getResourceAsStream(resourceFileName + Tags.TEMPLATE);
-        if (is == null) {
+        inputStream = cls.getClassLoader().getResourceAsStream(resourceFileName + Tags.TEMPLATE);
+        if (inputStream == null) {
             throw new BadIOException("Resource " + sourceFile + Tags.TEMPLATE + " not found");
         }
-        prepare(is);
+        prepare(inputStream);
     }
 
     TemplateProcessor(Class<?> cls, String dataSource, String templateName, boolean loadFromFile) {
@@ -59,9 +59,13 @@ public class TemplateProcessor {
         prepare(is);
     }
 
-    public TemplateProcessor(Class<?> cls, InputStream is) {
+    /**
+     * @param cls
+     * @param inputStream
+     */
+    public TemplateProcessor(Class<?> cls, InputStream inputStream) {
         classs = cls;
-        prepare(is);
+        prepare(inputStream);
     }
 
     private void addToBlockMap() {
@@ -73,9 +77,9 @@ public class TemplateProcessor {
         blockList.put(last.name, last);
     }
 
-    private void prepare(InputStream is) {
+    private void prepare(InputStream inputStream) {
         templateLines = new ArrayList<TemplateBlock>();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder contLine = null;
         String line;
         int lineNumber = 0;
@@ -105,8 +109,18 @@ public class TemplateProcessor {
         } catch (IOException e) {
             throw new BadIOException(e.getMessage());
         }
+        try {
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * @param varName to set
+     * @param value   to set with
+     * @return
+     */
     public TemplateProcessor setValue(String varName, String value) {
         Integer count = 0;
         for (TemplateBlock t : templateLines) {
@@ -126,6 +140,14 @@ public class TemplateProcessor {
         return sb.toString();
     }
 
+    /**
+     * if strBlockName is not unique then already existing block with the same name
+     * will be returned
+     * 
+     * @param name         Template to get
+     * @param strBlockName Name for the Template block that will be inserted
+     * @return TemplateProcessor object
+     */
     public TemplateProcessor addRepeatBlock(String name, String strBlockName) {
         TemplateBlock block = blockList.get(name);
         if (block == null) {
@@ -153,10 +175,22 @@ public class TemplateProcessor {
         return tp;
     }
 
+    /**
+     * This function is okay to use for import_once type block
+     * 
+     * @param name Template to get, also name will be used for inserting Import
+     *             block with the same name
+     * @return
+     */
     public TemplateProcessor addImportBlock(String name) {
         return addImportBlock(name, name);
     }
 
+    /**
+     * @param name         import block to get
+     * @param strBlockName name of inserted import block
+     * @return
+     */
     public TemplateProcessor addImportBlock(String name, String strBlockName) {
         TemplateBlock block = blockList.get(name);
         if (block == null) {
@@ -181,6 +215,12 @@ public class TemplateProcessor {
         return tp;
     }
 
+    /**
+     * Add in the array of insert, tabs will not be inserted properly
+     * 
+     * @param name insert line to get
+     * @param text to insert
+     */
     public void addToInsert(String name, String text) {
         TemplateBlock block = blockList.get(name);
         if (block.lineType != LineType.INSERT) {
@@ -190,6 +230,13 @@ public class TemplateProcessor {
         block.simpleInsert.add(text);
     }
 
+    /**
+     * If the text string is multiline and should be written with proper tabs, then
+     * consider using this function
+     * 
+     * @param name insert line to get
+     * @param text to insert
+     */
     public void addToInsertSplitNewLIne(String name, String text) {
         TemplateBlock block = blockList.get(name);
         if (block.lineType != LineType.INSERT) {
