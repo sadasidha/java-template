@@ -13,49 +13,47 @@ import java.util.Map;
 import com.google.common.base.Strings;
 
 /**
- * @author johny Not writing this to be a brand new way of parsing template
+ * @author Johny Not writing this to be a brand new way of parsing template
  * 
  */
 public class TemplateProcessor {
-    static final String TEMPLATE = ".template";
-    static final String IMPORT = "#import ";
-    static final String START = "#start ";
-    static final String END = "#end ";
-    static final String INSERT = "#insert ";
     static final String TAB = "    ";
-    static final String LOOK = "##";
-    static final int LOOK_LENGTH = 2;
-    static final String COMMENT = "#comment ";
-    public static final String IMPORT_ONCE = "#import_once ";
     Class<?> classs;
     int base_tab = 0;
     String sourceFile;
     List<TemplateBlock> templateLines;
     Map<String, TemplateBlock> blockList = new HashMap<String, TemplateBlock>();
 
-    public TemplateProcessor(Class<?> cls, String dataSource) {
+    /**
+     * Resource file must have to be in the same package of the declared class.<br>
+     * If resource file name including path is resources/template/web.template<br>
+     * <b>resourceFileName</b> must have to be <b>template/web</b>
+     * 
+     * @param cls             : give us the base for resource files
+     * @param resourceFileName : loadable resource file file
+     */
+    public TemplateProcessor(Class<?> cls, String resourceFileName) {
         classs = cls;
         InputStream is;
-
-        sourceFile = dataSource;
-        is = cls.getClassLoader().getResourceAsStream(dataSource + TEMPLATE);
+        sourceFile = resourceFileName;
+        is = cls.getClassLoader().getResourceAsStream(resourceFileName + Tags.TEMPLATE);
         if (is == null) {
-            throw new BadIOException("Resource " + sourceFile + TEMPLATE + " not found");
+            throw new BadIOException("Resource " + sourceFile + Tags.TEMPLATE + " not found");
         }
         prepare(is);
     }
 
-    public TemplateProcessor(Class<?> cls, String dataSource, String from, boolean loadFromFile) {
+    TemplateProcessor(Class<?> cls, String dataSource, String templateName, boolean loadFromFile) {
         classs = cls;
         InputStream is;
         if (loadFromFile) {
-            sourceFile = from + " > " + dataSource;
-            is = cls.getClassLoader().getResourceAsStream(dataSource + TEMPLATE);
+            sourceFile = templateName + " > " + dataSource;
+            is = cls.getClassLoader().getResourceAsStream(dataSource + Tags.TEMPLATE);
             if (is == null) {
-                throw new BadIOException("Resource " + sourceFile + TEMPLATE + " not found.");
+                throw new BadIOException("Resource " + sourceFile + Tags.TEMPLATE + " not found.");
             }
         } else {
-            sourceFile = from;
+            sourceFile = templateName;
             is = new ByteArrayInputStream(dataSource.getBytes());
         }
         prepare(is);
@@ -86,11 +84,11 @@ public class TemplateProcessor {
             while ((line = br.readLine()) != null) {
                 lineNumber++;
                 String simpleLine = line.trim().replaceAll("\\s+", " ");
-                if (contLine == null && line.trim().startsWith(START)) {
+                if (contLine == null && line.trim().startsWith(Tags.START)) {
                     startName = simpleLine.split(" ")[1];
                     contLine = new StringBuilder();
                     contLine.append(line).append("\n");
-                } else if (contLine != null && simpleLine.startsWith(END + startName)) {
+                } else if (contLine != null && simpleLine.startsWith(Tags.END + startName)) {
                     contLine.append(line).append("\n");
                     templateLines.add(new TemplateBlock(contLine.toString(), lineNumber));
                     contLine = null;

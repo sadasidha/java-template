@@ -34,7 +34,7 @@ class TemplateBlock {
     private String getFirstLine() {
         String[] ar = templateString.split("\n");
         for (String s : ar) {
-            if (!s.trim().startsWith(TemplateProcessor.START)) {
+            if (!s.trim().startsWith(Tags.START)) {
                 return s;
             }
         }
@@ -70,22 +70,22 @@ class TemplateBlock {
         name = "";
         String s = templateString.trim();
         String splits[] = s.split("\n");
-        if (s.startsWith(TemplateProcessor.COMMENT)) {
+        if (s.startsWith(Tags.COMMENT)) {
             lineType = LineType.COMMENT;
-        } else if (s.startsWith(TemplateProcessor.IMPORT)) {
+        } else if (s.startsWith(Tags.IMPORT)) {
             lineType = LineType.IMPORT;
             templateProcessorMap = getNewMap();
             setName(true);
-        } else if (s.startsWith(TemplateProcessor.IMPORT_ONCE)) {
+        } else if (s.startsWith(Tags.IMPORT_ONCE)) {
             lineType = LineType.IMPORT_ONCE;
             templateProcessorMap = getNewMap();
             setName(true);
-        } else if (s.startsWith(TemplateProcessor.INSERT)) {
+        } else if (s.startsWith(Tags.INSERT)) {
             lineType = LineType.INSERT;
             simpleInsert = new ArrayList<String>();
             setName(false);
-        } else if (s.startsWith(TemplateProcessor.START)
-                && splits[splits.length - 1].trim().startsWith(TemplateProcessor.END)) {
+        } else if (s.startsWith(Tags.START)
+                && splits[splits.length - 1].trim().startsWith(Tags.END)) {
             lineType = LineType.REPEATE;
             setName(false);
             // name information will be lost
@@ -110,14 +110,14 @@ class TemplateBlock {
         String processing = templateString.trim();
         tokenList = new ArrayList<Token>();
         do {
-            firstIndex = processing.indexOf(TemplateProcessor.LOOK, firstIndex);
+            firstIndex = processing.indexOf(Tags.LOOK, firstIndex);
             if (firstIndex == -1)
                 break;
-            secondIndex = processing.indexOf(TemplateProcessor.LOOK, firstIndex + TemplateProcessor.LOOK_LENGTH);
+            secondIndex = processing.indexOf(Tags.LOOK, firstIndex + Tags.LOOK_LENGTH);
             if (secondIndex == -1) {
                 break;
             }
-            secondIndex += TemplateProcessor.LOOK_LENGTH;
+            secondIndex += Tags.LOOK_LENGTH;
             if (lastWordPos != firstIndex) {
                 tokenList.add(new Token(true, processing.substring(lastWordPos, firstIndex)));
             }
@@ -132,7 +132,7 @@ class TemplateBlock {
 
     Integer setVariables(String varName, String value) {
         Integer i = 0;
-        String s = TemplateProcessor.LOOK + varName + TemplateProcessor.LOOK;
+        String s = Tags.LOOK + varName + Tags.LOOK;
         for (Token t : tokenList) {
             if (t.processed)
                 continue;
