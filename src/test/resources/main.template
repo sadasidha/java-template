@@ -1,0 +1,16 @@
+package ##package_name##;
+
+#import_once imports
+
+public class ##class_name## {
+    public static void main(String []args) {
+        List<String> strs = new ArrayList<String>();
+        #start value_set
+        strs.add("##string##");
+        #end value_set
+        for(String s: strs) {
+            System.out.print(s);
+        }
+        System.out.println("##final_message##");
+    }
+}

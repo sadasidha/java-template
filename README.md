@@ -21,6 +21,7 @@ A simple and more readable tool generate Java Source code
   
 ### Example
 1. template file
+
 ```java
 // main.template
 #package ##package_name##;
@@ -40,22 +41,57 @@ public class ##class_name## {
 }
 
 ```
+
 2. imports.template
+
 ```java
 import java.util.List;
 import java.util.ArrayList;
 ```
-2. Some.java
+
+3. Processing the block
+
 ```java
-    public static void main(String []args) {
-        TemplateProcessor templateProcessor = new TemplateProcessor(Some.class, "main");
-        templateProcessor.setValue("package_name", "my.world");
-        templateProcessor.setValue("class_name", "HelloWorld");        
+import org.junit.jupiter.api.Test;
+
+public class SimpleExampleTest {
+    @Test
+    public void execute() {
+        TemplateProcessor templateProcessor = new TemplateProcessor(this.getClass(), "main");
+        templateProcessor.setValue("package_name", "hello.world");
+        templateProcessor.setValue("class_name", "HelloWorld");
         templateProcessor.setValue("final_message", "");
         templateProcessor.addImportBlock("imports");
-        templateProcessor.addRepeatBlock("string", "n1").setValue("string", "Hello");
-        templateProcessor.addRepeatBlock("string", "n2").setValue("string", " World");
-        
+        templateProcessor.addRepeatBlock("value_set", "n1").setValue("string", "Hello");
+        templateProcessor.addRepeatBlock("value_set", "n2").setValue("string", " World");
         System.out.println(templateProcessor.toString());
     }
+}
 ```
+
+4. Generated Code
+
+```java
+
+package hello.world;
+
+// Importing imports
+import java.util.List;
+import java.util.ArrayList;
+
+public class HelloWorld {
+    public static void main(String []args) {
+        List<String> strs = new ArrayList<String>();
+        // Repeat block: value_set starts
+        strs.add("Hello");
+        strs.add(" World");
+        // Repeat block: value_set ends
+        for(String s: strs) {
+            System.out.print(s);
+        }
+        System.out.println("");
+    }
+}
+```
+
+__note__: for most people java-poet is better. But, I find debugging templated source code is easier
