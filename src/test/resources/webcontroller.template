@@ -8,8 +8,8 @@ public class ##CLASS_NAME## extends HttpServlet {
     ##WEB_HANDLE_CLASS## controller;
 
     public ##CLASS_NAME##() {
-        #import webcontroller/singletone singletone
-        controller = new ##WEB_HANDLE_CLASS##(##SINGLETONE_LIST##);
+        #import webcontroller/singleton singleton
+        controller = new ##WEB_HANDLE_CLASS##(##SINGLETON_LIST##);
     }
 
     #import_once webcontroller/get  get

@@ -17,17 +17,17 @@ public class TestMain {
             imports.addToInsert("ADDITIONAL_IMPORT", "import java.util.HashMap;\nimport java.util.ArrayList;");
             template.setValue("CLASS_NAME", "ExtendedWebController");
             template.setValue("WEB_HANDLE_CLASS", "simple.mind.school.Search");
-            TemplateProcessor single_one = template.addImportBlock("singletone", "singltone1");
+            TemplateProcessor single_one = template.addImportBlock("singleton", "singleton1");
             single_one.setValue("VARIABLE_TYPE", "String");
             single_one.setValue("VARIABLE_NAME", "theString");
             StringJoiner sj = new StringJoiner(", ");
             sj.add("thString");
-            TemplateProcessor single_two = template.addImportBlock("singletone", "singltone2");
+            TemplateProcessor single_two = template.addImportBlock("singleton", "singleton2");
 
             single_two.setValue("VARIABLE_TYPE", "Cobar");
             single_two.setValue("VARIABLE_NAME", "theCobra");
             sj.add("theCobra");
-            template.setValue("SINGLETONE_LIST", sj.toString());
+            template.setValue("SINGLETON_LIST", sj.toString());
 
             template.addImportBlock("get", "get");
             template.addImportBlock("get_exe", "get_exe");
