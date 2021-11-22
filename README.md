@@ -3,7 +3,7 @@
 A simple and more readable tool generate Java Source code
 
 
-## basic characteristics
+# Usage
 
 1. <b>#insert</b>. String can be inserted in this 
 
@@ -125,4 +125,21 @@ public class HelloWorld {
 }
 ```
 
+# Including in your source code
+
+1. Clone this repostiroy
+2. execute *install.sh*
+
+```sh
+bash install.sh
+```
+3. add the following lines in your pom.xml
+
+```xml
+<dependency>
+	<groupId>simple.mind</groupId>
+	<artifactId>java-template</artifactId>
+	<version>0.0.1</version>
+</dependency>
+```
 __note__: Use at your own risk
