@@ -1,12 +1,12 @@
 package simple.mind.template;
 
- class BadFormatException extends RuntimeException {
+/**
+ * @author Mohibur Rashid
+ */
+class BadFormatException extends RuntimeException {
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    BadFormatException(String msg) {
-        super(msg);
-    }
+  BadFormatException(String msg) {
+    super(msg);
+  }
 }

@@ -8,6 +8,10 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author Mohibur Rashid
+ *
+ */
 class TemplateBlock {
     String templateString;
     int tabCount;
@@ -34,7 +38,7 @@ class TemplateBlock {
     private String getFirstLine() {
         String[] ar = templateString.split("\n");
         for (String s : ar) {
-            if (!s.trim().startsWith(Tags.START)) {
+            if (!s.trim().startsWith(TagsConst.START)) {
                 return s;
             }
         }
@@ -70,22 +74,22 @@ class TemplateBlock {
         name = "";
         String s = templateString.trim();
         String splits[] = s.split("\n");
-        if (s.startsWith(Tags.COMMENT)) {
+        if (s.startsWith(TagsConst.COMMENT)) {
             lineType = LineType.COMMENT;
-        } else if (s.startsWith(Tags.IMPORT)) {
+        } else if (s.startsWith(TagsConst.IMPORT)) {
             lineType = LineType.IMPORT;
             templateProcessorMap = getNewMap();
             setName(true);
-        } else if (s.startsWith(Tags.IMPORT_ONCE)) {
+        } else if (s.startsWith(TagsConst.IMPORT_ONCE)) {
             lineType = LineType.IMPORT_ONCE;
             templateProcessorMap = getNewMap();
             setName(true);
-        } else if (s.startsWith(Tags.INSERT)) {
+        } else if (s.startsWith(TagsConst.INSERT)) {
             lineType = LineType.INSERT;
             simpleInsert = new ArrayList<String>();
             setName(false);
-        } else if (s.startsWith(Tags.START)
-                && splits[splits.length - 1].trim().startsWith(Tags.END)) {
+        } else if (s.startsWith(TagsConst.START)
+                && splits[splits.length - 1].trim().startsWith(TagsConst.END)) {
             lineType = LineType.REPEATE;
             setName(false);
             // name information will be lost
@@ -110,14 +114,14 @@ class TemplateBlock {
         String processing = templateString.trim();
         tokenList = new ArrayList<Token>();
         do {
-            firstIndex = processing.indexOf(Tags.LOOK, firstIndex);
+            firstIndex = processing.indexOf(TagsConst.LOOK, firstIndex);
             if (firstIndex == -1)
                 break;
-            secondIndex = processing.indexOf(Tags.LOOK, firstIndex + Tags.LOOK_LENGTH);
+            secondIndex = processing.indexOf(TagsConst.LOOK, firstIndex + CommConst.LOOK_LENGTH);
             if (secondIndex == -1) {
                 break;
             }
-            secondIndex += Tags.LOOK_LENGTH;
+            secondIndex += CommConst.LOOK_LENGTH;
             if (lastWordPos != firstIndex) {
                 tokenList.add(new Token(true, processing.substring(lastWordPos, firstIndex)));
             }
@@ -132,7 +136,7 @@ class TemplateBlock {
 
     Integer setVariables(String varName, String value) {
         Integer i = 0;
-        String s = Tags.LOOK + varName + Tags.LOOK;
+        String s = TagsConst.LOOK + varName + TagsConst.LOOK;
         for (Token t : tokenList) {
             if (t.processed)
                 continue;

@@ -1,5 +1,9 @@
 package simple.mind.template;
 
+/**
+ * @author Mohibur Rashid
+ *
+ */
 class Token {
     boolean processed = false;
     String token = null;
