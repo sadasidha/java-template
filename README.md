@@ -3,23 +3,54 @@
 A simple and more readable tool generate Java Source code
 
 
-### basic characteristics
+## basic characteristics
 
-1. #import resource/path name<br>
-  Can be imported as many time it is necessary
-1. #import_once resource/path name<br>
-  Can be imported at most one time
-1. #start name1¥n...¥n#end name1<br>
-  Code block that can be injected more than once
-1. #comment literal string<br>
-  Will be ignored
-1. #insert name<br>
-  Can be insert string more than once
-1. ##NAME##<br>
-  Variable. All variables in the current template file will be replaced, except repeat block #start name1¥n...¥nend name1¥n
+1. <b>#insert</b>. String can be inserted in this 
+
+```sh
+#insert imports_line;
+```
+
+2. <b>#comment</b>. Comment will be ignroed all together.
+
+```sh
+#comment this is just comment. 
+#comment this lines will not be available in our resulted source code
+```
+
+3. <b>\#\#VARIABLE##</b>. All variables in the current template file will be replaced, except *repeat block*. Every variable name starts with ## and ends with ##
+
+```sh
+#comment example
+String fileName = "##FILE_NAME##";
+```
+
+4. <b>#import</b>. Can be imported multiple time. After improting variables can be updated. 
+
+```sh
+#comment example
+#import resource_path
+```
+
+5. <b>import_once</b>. Can bee imported only once. Variables can be updated after improting.
+
+```sh
+#comment example
+#import_once resource_path
+```
+
+6. <b>Code block</b> that can be injected more than once. Code block start with <b>#start</b> followed by a name. Block will be end with <b>#end </b> followed by the exact same name. Can be loaded only once.
+
+```sh
+#comment example
+int i;
+#start file_process_block
+  i = ##VALUE_TO_SET##;
+  fileOpen(##FILE_NAME##, ##VALUE_TO_SET##);
+#end file_process_block
+```
   
-  
-### Example
+# Example
 1. template file
 
 ```java
@@ -94,4 +125,4 @@ public class HelloWorld {
 }
 ```
 
-__note__: for most people java-poet is better. But, I find debugging templated source code is easier
+__note__: Use at your own risk
