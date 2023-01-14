@@ -55,7 +55,7 @@ int i;
 
 ```java
 // main.template
-#package ##package_name##;
+package ##package_name##;
 #import_once imports
 
 public class ##class_name## {
@@ -88,14 +88,14 @@ import org.junit.jupiter.api.Test;
 public class SimpleExampleTest {
     @Test
     public void execute() {
-        TemplateProcessor templateProcessor = new TemplateProcessor(this.getClass(), "main");
-        templateProcessor.setValue("package_name", "hello.world");
-        templateProcessor.setValue("class_name", "HelloWorld");
-        templateProcessor.setValue("final_message", "");
-        templateProcessor.addImportBlock("imports");
-        templateProcessor.addRepeatBlock("value_set", "n1").setValue("string", "Hello");
-        templateProcessor.addRepeatBlock("value_set", "n2").setValue("string", " World");
-        System.out.println(templateProcessor.toString());
+        TemplateProcessor tp = new TemplateProcessor(this.getClass(), "main");
+        tp.setValue("package_name", "hello.world");
+        tp.setValue("class_name", "HelloWorld");
+        tp.setValue("final_message", "");
+        tp.addImportBlock("imports");
+        tp.addRepeatBlock("value_set", "n1").setValue("string", "Hello");
+        tp.addRepeatBlock("value_set", "n2").setValue("string", " World");
+        System.out.println(tp.toString());
     }
 }
 ```
@@ -127,7 +127,7 @@ public class HelloWorld {
 
 # Including in your source code
 
-1. Clone this repostiroy
+1. Clone this repository
 2. execute *install.sh*
 
 ```sh
@@ -142,4 +142,5 @@ bash install.sh
 	<version>0.0.1</version>
 </dependency>
 ```
+
 __note__: Use at your own risk

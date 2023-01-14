@@ -32,7 +32,7 @@ public class TestMain {
             template.addImportBlock("get", "get");
             template.addImportBlock("get_exe", "get_exe");
             System.out.println(template.toString());
-        } catch (DuplicateNameException | BadFormatException | BlockMissingException e) {
+        } catch (DuplicateNameException | CommonExceptions | BlockMissingException e) {
             e.printStackTrace();
         }
     }

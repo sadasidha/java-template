@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Strings;
+
 //import com.google.common.base.Strings;
 
 /**
@@ -20,7 +22,12 @@ public class TemplateProcessor {
   Class<?> classs;
   int base_tab = 0;
   String sourceFile;
-  List<TemplateBlock> templateLines;
+  // hold each lines or block
+  List<TemplateBlock> templateLines = new ArrayList<TemplateBlock>();
+
+  // blockList contains all the block that is being injected into templateLines,
+  // it guarantees that user did not inject same name twice, name uniqueness
+  // belongs to each TemplateProcessor.
   Map<String, TemplateBlock> blockList = new HashMap<String, TemplateBlock>();
 
   /**
@@ -67,17 +74,13 @@ public class TemplateProcessor {
     prepare(inputStream);
   }
 
-  private void addToBlockMap() {
-    TemplateBlock last = templateLines.get(templateLines.size() - 1);
-    if (Strings.isNullOrEmpty(last.name))
-      return;
-    if (blockList.containsKey(last.name))
-      throw new DuplicateNameException(last.name + " repeat in the same file");
-    blockList.put(last.name, last);
-  }
-
+  /**
+   * Goes through entire file, identify each line, classify them according to the
+   * nature of the line.
+   * 
+   * @param inputStream
+   */
   private void prepare(InputStream inputStream) {
-    templateLines = new ArrayList<TemplateBlock>();
     BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
     StringBuilder contLine = null;
     String line;
@@ -87,11 +90,11 @@ public class TemplateProcessor {
       while ((line = br.readLine()) != null) {
         lineNumber++;
         String simpleLine = line.trim().replaceAll("\\s+", " ");
-        if (contLine == null && line.trim().startsWith(TagsConst.START)) {
+        if (contLine == null && line.trim().startsWith(TagsConst.TAG_START)) {
           startName = simpleLine.split(" ")[1];
           contLine = new StringBuilder();
           contLine.append(line).append("\n");
-        } else if (contLine != null && simpleLine.startsWith(TagsConst.END + startName)) {
+        } else if (contLine != null && simpleLine.startsWith(TagsConst.TAG_END + startName)) {
           contLine.append(line).append("\n");
           templateLines.add(new TemplateBlock(contLine.toString(), lineNumber));
           contLine = null;
@@ -101,13 +104,25 @@ public class TemplateProcessor {
         } else {
           templateLines.add(new TemplateBlock(line, lineNumber));
         }
-        if (contLine == null) {
-          addToBlockMap();
+
+        // adding to block list map. We will pick up the last
+        if (contLine == null) { // if contLine is not null, it means block tag is still not finished;
+          TemplateBlock last = templateLines.get(templateLines.size() - 1);
+          if (!Strings.isNullOrEmpty(last.name)) {
+            if (blockList.containsKey(last.name))
+              throw new DuplicateNameException(last.name + " repeat in the same file");
+            blockList.put(last.name, last);
+          }
+
         }
+      }
+      if(contLine != null) {
+        throw new RepeatBlockWithoutEndException("Block finished without ending. Line number: " + lineNumber);
       }
     } catch (IOException e) {
       throw new BadIOException(e.getMessage());
     }
+
     try {
       br.close();
     } catch (IOException e) {
@@ -123,20 +138,11 @@ public class TemplateProcessor {
   public TemplateProcessor setValue(String varName, String value) {
     Integer count = 0;
     for (TemplateBlock t : templateLines) {
-      if (t.lineType == LineType.SIMPLE_LINE) {
+      if (t.lineType == BlockType.BLOCK_SIMPLE_LINE) {
         count += t.setVariables(varName, value);
       }
     }
     return this;
-  }
-
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-
-    for (TemplateBlock tb : templateLines) {
-      sb.append(tb.toString(base_tab));
-    }
-    return sb.toString();
   }
 
   /**
@@ -152,12 +158,12 @@ public class TemplateProcessor {
     if (block == null) {
       throw new BlockMissingException(name + " block is missing, checking your spelling in file " + this.sourceFile);
     }
-    if (block.lineType != LineType.REPEATE) {
+    if (block.lineType != BlockType.BLOCK_REPEATE) {
       throw new IncorrectActionException("Repeat inclusion cannot be done on type " + block.lineType + " for name: "
           + name + ", fileName: " + block.loadableTemplateName + "[" + block.lineNumber + "]");
     }
 
-    if (block.lineType == LineType.IMPORT_ONCE && block.templateProcessorMap.size() > 1) {
+    if (block.lineType == BlockType.BLOCK_IMPORT_ONCE && block.templateProcessorMap.size() > 1) {
       throw new IncorrectActionException(
           "Import can be done one time only. at fileName: " + block.loadableTemplateName + ": " + block.lineNumber);
     }
@@ -193,11 +199,11 @@ public class TemplateProcessor {
     if (block == null) {
       throw new BlockMissingException(name + " block is missing, checking your spelling in file " + this.sourceFile);
     }
-    if (block.lineType != LineType.IMPORT && block.lineType != LineType.IMPORT_ONCE) {
+    if (block.lineType != BlockType.BLOCK_IMPORT && block.lineType != BlockType.BLOCK_IMPORT_ONCE) {
       throw new IncorrectActionException("Import cannot be done on type " + block.lineType + " for name: " + name
           + ", fileName: " + block.loadableTemplateName + "[" + block.lineNumber + "]");
     }
-    if (block.lineType == LineType.IMPORT_ONCE && block.templateProcessorMap.size() > 1) {
+    if (block.lineType == BlockType.BLOCK_IMPORT_ONCE && block.templateProcessorMap.size() > 1) {
       throw new IncorrectActionException(
           "Import can be done one time only. at fileName: " + block.loadableTemplateName + ": " + block.lineNumber);
     }
@@ -219,7 +225,7 @@ public class TemplateProcessor {
    */
   public void addToInsert(String name, String text) {
     TemplateBlock block = blockList.get(name);
-    if (block.lineType != LineType.INSERT) {
+    if (block.lineType != BlockType.BLOCK_INSERT) {
       throw new IncorrectActionException("Insert cannot be done on type " + block.lineType + " for name: " + name
           + ", fileName: " + block.loadableTemplateName + "[" + block.lineNumber + "]");
     }
@@ -235,7 +241,7 @@ public class TemplateProcessor {
    */
   public void addToInsertSplitNewLIne(String name, String text) {
     TemplateBlock block = blockList.get(name);
-    if (block.lineType != LineType.INSERT) {
+    if (block.lineType != BlockType.BLOCK_INSERT) {
       throw new IncorrectActionException("Insert cannot be done on type " + block.lineType + " for name: " + name
           + ", fileName: " + block.loadableTemplateName + "[" + block.lineNumber + "]");
     }
@@ -243,4 +249,17 @@ public class TemplateProcessor {
       block.simpleInsert.add(s);
     }
   }
+
+  /**
+   * Process and finalize the result;
+   */
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+
+    for (TemplateBlock tb : templateLines) {
+      sb.append(tb.toString(base_tab));
+    }
+    return sb.toString();
+  }
+
 }
