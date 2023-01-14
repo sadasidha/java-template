@@ -93,35 +93,52 @@ public class TestTemplateBlock {
   @Test
   public void testUnProcessedBlock() throws IOException {
     String sb = """
-        package ##PACKAGE_NAME##;
+package ##PACKAGE_NAME##;
 
-        import jakarta.persistence.Entity;
-        import jakarta.persistence.GeneratedValue;
-        import jakarta.persistence.GenerationType;
-        import jakarta.persistence.Id;
-        import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-        #start additional
-        import ##IMPORT##;
-        #end additional
+#start additional
+import ##IMPORT##;
+#end additional
 
-        @Entity
-        @Data
-        @Table(name = "##TABLE_NAME##")
-        public class ##CLASS_NAME## {
-          @Id
-          @GeneratedValue(strategy = GenerationType.IDENTITY)
-          private ##ID_TYPE## ##ID##;
+@Entity
+@Data
+@Table(name = "##TABLE_NAME##")
+public class ##CLASS_NAME## {
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private ##ID_TYPE## ##ID##;
 
-          #start column
-          #insert annotation
-          private ##TYPE## ##COLUMN_NAME##;
-          #end column
-        }
-
-            """;
+#start column
+#insert annotation
+private ##TYPE## ##COLUMN_NAME##;
+#end column
+}
+""";
     TemplateProcessor tp = new TemplateProcessor(this.getClass(), sb, "", false);
-    // assertEquals("", tp.toString().trim());
-    System.out.println(tp.toString());
+    assertEquals("""
+package ##PACKAGE_NAME##;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+
+@Entity
+@Data
+@Table(name = "##TABLE_NAME##")
+public class ##CLASS_NAME## {
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private ##ID_TYPE## ##ID##;
+
+}""", tp.toString().trim());
+    //System.out.println(tp.toString());
   }
 }
