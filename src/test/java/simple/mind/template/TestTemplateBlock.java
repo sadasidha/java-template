@@ -123,7 +123,48 @@ private ##TYPE## ##COLUMN_NAME##;
     assertEquals("""
 package ##PACKAGE_NAME##;
 
+import jakarta.persistenvimdiff <( cat << EOF
+package ##PACKAGE_NAME##;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+
+@Entity
+@Data
+@Table(name = "##TABLE_NAME##")
+public class ##CLASS_NAME## {
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private ##ID_TYPE## ##ID##;
+
+}
+EOF
+) <( cat <<EOF
+
+package ##PACKAGE_NAME##;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+
+@Entity
+@Data
+@Table(name = "##TABLE_NAME##")
+public class ##CLASS_NAME## {
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private ##ID_TYPE## ##ID##;
+
+}
+EOF
+)ce.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
